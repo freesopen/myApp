@@ -1,4 +1,4 @@
-package com.kotlin.baselibrary
+package com.kotlin.base
 
 import org.junit.Test
 
