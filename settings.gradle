@@ -1,0 +1,4 @@
+include ':Provider'
+include ':Baselibrary'
+include ':App'
+rootProject.name = "KotlinMall"
