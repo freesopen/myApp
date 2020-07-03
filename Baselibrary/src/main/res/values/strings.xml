@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">KotlinMall</string>
+    <string name="user_center">UserCenter</string>
 </resources>
