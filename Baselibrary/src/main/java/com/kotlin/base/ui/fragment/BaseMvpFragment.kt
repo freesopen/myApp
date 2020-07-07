@@ -1,6 +1,5 @@
-package com.kotlin.base.ui.activity
+package com.kotlin.base.ui.fragment
 
-import android.app.Dialog
 import android.os.Bundle
 import android.os.PersistableBundle
 import com.kotlin.base.common.BaseApplication
@@ -10,45 +9,40 @@ import com.kotlin.base.injection.module.ActivityModule
 import com.kotlin.base.injection.module.LifecycleProviderModule
 import com.kotlin.base.presenter.BasePresenter
 import com.kotlin.base.presenter.view.BaseView
-import com.kotlin.base.widgets.ProgressLoading
+import com.kotlin.base.ui.activity.BaseActivity
 import javax.inject.Inject
 
-open abstract class BaseMvpActivity<T : BasePresenter<*>> : BaseActivity(), BaseView {
+open abstract class BaseMvpFragment<T : BasePresenter<*>> : BaseFragment(), BaseView {
+    override fun showLoading() {
+        TODO("Not yet implemented")
+
+    }
+
+    override fun hideLoading() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onError() {
+        TODO("Not yet implemented")
+    }
 
     @Inject
     lateinit var mPresenter: T
-
     lateinit var activityComponent: ActivityComponent;
-    private   lateinit var mLoadingDialog: ProgressLoading;
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initActivityInjection()
         injectComponent()
-        mLoadingDialog = ProgressLoading.create(this)
     }
 
     abstract fun injectComponent();
     private fun initActivityInjection() {
         activityComponent = DaggerActivityComponent.builder().appComponent(
-            (application as BaseApplication).appComponent
+            (activity.application as BaseApplication).appComponent
         )
-            .activityModule(ActivityModule(this))
+            .activityModule(ActivityModule(activity))
             .lifecycleProviderModule(LifecycleProviderModule(this))
             .build();
 
     }
-
-    override fun showLoading() {
-        mLoadingDialog.showLoading();
-    }
-
-    override fun hideLoading() {
-        mLoadingDialog.hideLoading();
-
-    }
-
-    override fun onError() {
-
-    }
-
 }

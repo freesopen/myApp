@@ -8,7 +8,8 @@
         android:allowBackup="true"
         android:label="@string/user_center"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:name="com.kotlin.base.common.BaseApplication">
         <activity android:name=".ui.activity.TestActivity" />
         <activity android:name=".ui.activity.RegisterActivity">
             <intent-filter>
