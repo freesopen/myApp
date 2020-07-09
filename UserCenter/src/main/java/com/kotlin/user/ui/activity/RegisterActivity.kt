@@ -6,6 +6,7 @@ import android.view.View
 import com.kotlin.base.common.AppManager
 import com.kotlin.base.ext.onClick
 import com.kotlin.base.ui.activity.BaseMvpActivity
+import com.kotlin.base.widgets.VerifyButton
 import com.kotlin.user.R
 import com.kotlin.user.injection.component.DaggerUserComponent
 import com.kotlin.user.injection.module.UserModule
@@ -13,38 +14,48 @@ import com.kotlin.user.presenter.RegisterPresenter
 import com.kotlin.user.presenter.view.RegisterView
 import kotlinx.android.synthetic.main.activity_register.*
 import org.jetbrains.anko.toast
-class RegisterActivity : BaseMvpActivity<RegisterPresenter>(),RegisterView {
-private var pressTime:Long=0
+
+class RegisterActivity : BaseMvpActivity<RegisterPresenter>(), RegisterView {
+    private var pressTime: Long = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        mRegisterBtn.onClick{
-
+        mRegisterBtn.onClick {
             mPresenter.register(
                 mMobileEt.text.toString(),
                 mVerifyCodeEt.text.toString(), mPwdEt.text.toString()
             );
         }
+        mGetVerifyCodeBtn.onClick {
+            mGetVerifyCodeBtn.requestSendVerifyNumber();
+        }
+        mGetVerifyCodeBtn.setOnVerifyBtnClick(object :VerifyButton.OnVerifyBtnClick{
+            override fun onClick() {
+               toast("获取验证码")
+            }
+        })
 
     }
 
     override fun onReisterResult(result: String) {
-            toast(result);
+        toast(result);
     }
+
     override fun injectComponent() {
-        DaggerUserComponent.builder().activityComponent(activityComponent).userModule(UserModule()).build()
+        DaggerUserComponent.builder().activityComponent(activityComponent).userModule(UserModule())
+            .build()
             .inject(this);
-        mPresenter.mView=this;
+        mPresenter.mView = this;
     }
 
     override fun onBackPressed() {
 
         var time = System.currentTimeMillis();
-        if(  time-pressTime>2000){
-           toast("再按一次推出程序")
-            pressTime=time
-        }else{
+        if (time - pressTime > 2000) {
+            toast("再按一次推出程序")
+            pressTime = time
+        } else {
             AppManager.instance.exitApp(this);
         }
     }

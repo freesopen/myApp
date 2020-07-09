@@ -10,6 +10,7 @@ import com.kotlin.base.injection.module.LifecycleProviderModule
 import com.kotlin.base.presenter.BasePresenter
 import com.kotlin.base.presenter.view.BaseView
 import com.kotlin.base.ui.activity.BaseActivity
+import org.jetbrains.anko.toast
 import javax.inject.Inject
 
 open abstract class BaseMvpFragment<T : BasePresenter<*>> : BaseFragment(), BaseView {
@@ -22,8 +23,8 @@ open abstract class BaseMvpFragment<T : BasePresenter<*>> : BaseFragment(), Base
         TODO("Not yet implemented")
     }
 
-    override fun onError() {
-        TODO("Not yet implemented")
+    override fun onError(text: String) {
+        toast(text)
     }
 
     @Inject

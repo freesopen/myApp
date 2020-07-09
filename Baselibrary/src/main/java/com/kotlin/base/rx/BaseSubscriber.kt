@@ -3,7 +3,7 @@ package com.kotlin.base.rx
 import com.kotlin.base.presenter.view.BaseView
 import rx.Subscriber
 
-open class BaseSubscriber<T>(val baseView:BaseView) :Subscriber<T>(){
+open class BaseSubscriber<T>(private val baseView:BaseView) :Subscriber<T>(){
     override fun onNext(t: T) {
 
     }

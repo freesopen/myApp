@@ -5,5 +5,6 @@ class BaseConstant {
 
 //        const val SERVER_ADDRESS="http://211775v31r.51mypc.cn/Kotlin_Server/";
         const val SERVER_ADDRESS="http://211775v31r.51mypc.cn/";
+        const val TABLE_PREFS="kotlin_mall"
     }
 }

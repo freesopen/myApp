@@ -3,6 +3,7 @@ package com.kotlin.user.presenter
 import com.kotlin.base.ext.execute
 import com.kotlin.base.presenter.BasePresenter
 import com.kotlin.base.rx.BaseSubscriber
+import com.kotlin.base.utils.NetWorkUtils
 import com.kotlin.user.presenter.view.RegisterView
 import com.kotlin.user.service.UserService
 import com.kotlin.user.service.impl.UserServiceImpl
@@ -25,6 +26,9 @@ class RegisterPresenter @Inject constructor() : BasePresenter<RegisterView>() {
         /**
          * 业务逻辑
          */
+        if(!checkNetWork()){
+            return
+        }
         mView.showLoading();
        userService.register(mobile, pwd, verifyCode)
             .execute(object : BaseSubscriber<Boolean>(mView) {

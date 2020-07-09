@@ -26,10 +26,12 @@ fun <T> Observable<BaseResp<T>>.convertBoolean():Observable<Boolean>{
     return  this.flatMap(BaseFuncBoolean())
 }
 
-fun View.onClick(listener:View.OnClickListener){
+fun View.onClick(listener:View.OnClickListener):View{
     this.setOnClickListener(listener);
+    return this;
 }
 
-fun View.onClick(method:()->Unit){
-    this.setOnClickListener{method};
+fun View.onClick(method:()->Unit):View{
+   setOnClickListener{method()};
+    return this;
 }
