@@ -3,31 +3,31 @@ package com.kotlin.user.presenter
 import com.kotlin.base.ext.execute
 import com.kotlin.base.presenter.BasePresenter
 import com.kotlin.base.rx.BaseSubscriber
-import com.kotlin.user.presenter.view.RegisterView
+import com.kotlin.user.presenter.view.ResetPwdView
 import com.kotlin.user.service.UserService
 import javax.inject.Inject
 
-class RegisterPresenter @Inject constructor() : BasePresenter<RegisterView>() {
+/**
+ * 忘记密码
+ */
+class ResetPwdPresenter @Inject constructor()
+    : BasePresenter<ResetPwdView>() {
     @Inject
 //    @field:[Named ("service")]
     lateinit var userService: UserService
 
 
-    fun register(
-        mobile: String, verifyCode: String,
-        pwd: String ) {
-        /**
-         * 业务逻辑
-         */
+    fun resetPwd(
+        mobile: String, pwd: String) {
         if(!checkNetWork()){
             return
         }
         mView.showLoading();
-       userService.register(mobile, pwd, verifyCode)
+       userService.resetPwd(mobile, pwd)
             .execute(object : BaseSubscriber<Boolean>(mView) {
                 override fun onNext(t: Boolean) {
                     if (t) {
-                        mView.onReisterResult("注册成功");
+                        mView.onResetPwdResult("重置密码成功");
                     }
                 }
             },lifecycleProvider)
