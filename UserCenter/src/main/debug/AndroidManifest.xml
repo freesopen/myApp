@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.kotlin.user"
     tools:ignore="all">
-
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
     <application
         android:name="com.kotlin.base.common.BaseApplication"
         android:allowBackup="true"

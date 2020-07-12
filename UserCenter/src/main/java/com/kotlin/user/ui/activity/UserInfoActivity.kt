@@ -10,7 +10,10 @@ import com.bigkoo.alertview.OnItemClickListener
 import com.jph.takephoto.app.TakePhoto
 import com.jph.takephoto.app.TakePhotoImpl
 import com.jph.takephoto.compress.CompressConfig
+import com.jph.takephoto.model.InvokeParam
+import com.jph.takephoto.model.TContextWrap
 import com.jph.takephoto.model.TResult
+import com.jph.takephoto.permission.PermissionManager
 import com.kotlin.base.ext.onClick
 import com.kotlin.base.ui.activity.BaseMvpActivity
 import com.kotlin.base.utils.DateUtils
@@ -30,7 +33,7 @@ class UserInfoActivity :
     UserInfoView, TakePhoto.TakeResultListener {
     private lateinit var mTakePhoto: TakePhoto;
     private lateinit var mTempFile: File;
-
+    private lateinit var invokeParam: InvokeParam
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_info)
@@ -60,8 +63,7 @@ class UserInfoActivity :
                     when (position) {
                         0 -> {
                             createTempFile();
-                            mTakePhoto.onPickFromCapture(Uri.fromFile
-                                (mTempFile));
+                            mTakePhoto.onPickFromCapture(Uri.fromFile(mTempFile));
                         }
                         1 -> mTakePhoto.onPickFromGallery()
                     }
@@ -70,6 +72,26 @@ class UserInfoActivity :
         ).show();
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        //以下代码为处理Android6.0、7.0动态权限所需
+        //以下代码为处理Android6.0、7.0动态权限所需
+        val type =PermissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        PermissionManager.handlePermissionsResult(this, type, invokeParam, this)
+    }
+    operator fun invoke(invokeParam: InvokeParam): PermissionManager.TPermissionType? {
+
+        val type: PermissionManager.TPermissionType =
+            PermissionManager.checkPermission(TContextWrap.of(this), invokeParam.method)
+        if (PermissionManager.TPermissionType.WAIT == type) {
+            this.invokeParam=invokeParam;
+        }
+        return type
+    }
 
     override fun injectComponent() {
         DaggerUserComponent.builder().activityComponent(activityComponent)
