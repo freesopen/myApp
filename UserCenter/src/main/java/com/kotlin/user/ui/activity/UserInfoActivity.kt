@@ -1,19 +1,20 @@
 package com.kotlin.user.ui.activity
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.bigkoo.alertview.AlertView
 import com.bigkoo.alertview.OnItemClickListener
 import com.jph.takephoto.app.TakePhoto
 import com.jph.takephoto.app.TakePhotoImpl
 import com.jph.takephoto.compress.CompressConfig
-import com.jph.takephoto.model.InvokeParam
-import com.jph.takephoto.model.TContextWrap
 import com.jph.takephoto.model.TResult
-import com.jph.takephoto.permission.PermissionManager
 import com.kotlin.base.ext.onClick
 import com.kotlin.base.ui.activity.BaseMvpActivity
 import com.kotlin.base.utils.DateUtils
@@ -23,6 +24,7 @@ import com.kotlin.user.injection.module.UserModule
 import com.kotlin.user.presenter.UserInfoPresenter
 import com.kotlin.user.presenter.view.UserInfoView
 import kotlinx.android.synthetic.main.activity_user_info.*
+import org.jetbrains.anko.toast
 import java.io.File
 
 /**
@@ -33,14 +35,13 @@ class UserInfoActivity :
     UserInfoView, TakePhoto.TakeResultListener {
     private lateinit var mTakePhoto: TakePhoto;
     private lateinit var mTempFile: File;
-    private lateinit var invokeParam: InvokeParam
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_info)
         mTakePhoto = TakePhotoImpl(this, this)
         initView();
         mTakePhoto.onCreate(savedInstanceState)
-
+        checkPermission(Manifest.permission.CAMERA) { }
     }
 
     /**
@@ -55,43 +56,23 @@ class UserInfoActivity :
     private fun showAlertView() {
         AlertView("选择图片", "", "取消",
             null, arrayOf("拍照", "相册"), this,
-            AlertView.Style.ActionSheet, object : OnItemClickListener {
-                override fun onItemClick(o: Any?, position: Int) {
-                    mTakePhoto.onEnableCompress(
-                        CompressConfig.ofDefaultConfig(),
-                        false)
-                    when (position) {
-                        0 -> {
-                            createTempFile();
-                            mTakePhoto.onPickFromCapture(Uri.fromFile(mTempFile));
-                        }
-                        1 -> mTakePhoto.onPickFromGallery()
+            AlertView.Style.ActionSheet, OnItemClickListener { o, position ->
+                mTakePhoto.onEnableCompress(
+                    CompressConfig.ofDefaultConfig(),
+                    false
+                )
+                when (position) {
+                    0 -> {
+                        createTempFile();
+
+                        mTakePhoto.onPickFromCapture(Uri.fromFile(mTempFile))
                     }
+                    1 -> mTakePhoto.onPickFromGallery()
                 }
             }
         ).show();
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        //以下代码为处理Android6.0、7.0动态权限所需
-        //以下代码为处理Android6.0、7.0动态权限所需
-        val type =PermissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        PermissionManager.handlePermissionsResult(this, type, invokeParam, this)
-    }
-    operator fun invoke(invokeParam: InvokeParam): PermissionManager.TPermissionType? {
-
-        val type: PermissionManager.TPermissionType =
-            PermissionManager.checkPermission(TContextWrap.of(this), invokeParam.method)
-        if (PermissionManager.TPermissionType.WAIT == type) {
-            this.invokeParam=invokeParam;
-        }
-        return type
-    }
 
     override fun injectComponent() {
         DaggerUserComponent.builder().activityComponent(activityComponent)
@@ -111,7 +92,7 @@ class UserInfoActivity :
     }
 
     override fun takeFail(result: TResult?, msg: String?) {
-        Log.e("TakePhoto",msg)
+        Log.e("TakePhoto", msg)
 
     }
 
@@ -120,14 +101,40 @@ class UserInfoActivity :
         mTakePhoto.onActivityResult(requestCode, resultCode, data)
     }
 
-    fun createTempFile() {
+    private fun createTempFile() {
         val tempFileName = "${DateUtils.curTime}.png";
         //系统挂在目录
-        if (Environment.MEDIA_MOUNTED .equals( Environment.getExternalStorageState())) {
-            this.mTempFile = File(Environment.getExternalStorageDirectory
-                (), tempFileName)
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            this.mTempFile = File(
+                Environment.getExternalStorageDirectory
+                    (), tempFileName
+            )
             return
         }
         this.mTempFile = File(filesDir, tempFileName)
     }
+
+    /**
+     *        permission
+     *        Manifest.permission.CAMERA
+     * 授权权限
+     */
+
+    private fun checkPermission(permission: String, method: () -> Unit) {
+        if (ContextCompat.checkSelfPermission(
+                this.applicationContext,
+                permission
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // 进入这儿表示没有权限
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                // 提示已经禁止
+                toast("请授权,否则闪退")
+            } else {
+                ActivityCompat.requestPermissions(this, arrayOf(permission), 100);
+            }
+        }
+        method();
+    }
+
 }

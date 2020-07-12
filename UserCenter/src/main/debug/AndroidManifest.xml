@@ -2,18 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.kotlin.user"
-    tools:ignore="all">
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
-    <application
+    tools:ignore="all"
+    >
+  <application
         android:name="com.kotlin.base.common.BaseApplication"
         android:allowBackup="true"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+      >
         <activity android:name=".ui.activity.RegisterActivity" />
         <activity android:name=".ui.activity.ForgetPwdActivity" />
         <activity android:name=".ui.activity.ResetPwdActivity" />
-        <activity android:name=".ui.activity.UserInfoActivity" />
+      <activity android:name=".ui.activity.UserInfoActivity"
+          android:configChanges="orientation|keyboardHidden|screenSize"
+      >
+      </activity>
 
         <activity android:name=".ui.activity.LoginActivity">
             <intent-filter>
@@ -21,6 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
+
+  </application>
 
 </manifest>
