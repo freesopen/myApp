@@ -1,6 +1,7 @@
 package com.kotlin.base.data.net
 
 import com.kotlin.base.common.BaseConstant
+import com.kotlin.base.utils.AppPrefsUtils
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -21,6 +22,8 @@ class RetrofitFactory private constructor() {
                     .newBuilder()
                     .header("Content-Type", "application/json")
                     .header("charset", "utf-8")
+                    .header("token",AppPrefsUtils.getString(BaseConstant
+                        .KEY_SP_TOKEN))
                     .build()
                 chain.proceed(request)
             }

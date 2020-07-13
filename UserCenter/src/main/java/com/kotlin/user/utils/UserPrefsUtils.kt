@@ -8,7 +8,7 @@ import com.kotlin.user.data.protocol.UserInfo
 /*
     本地存储用户相关信息
  */
-object UserPrefsUtils {
+object  UserPrefsUtils {
 
     /*
         退出登录时，传入null,清空存储
