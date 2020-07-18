@@ -1,2 +1,7 @@
+include ':PaySDK'
+include ':OrderCenter'
+include ':GoodsCenter'
+include ':H5Center'
+include ':MessageCenter'
 include ':UserCenter',':Provider', ':Baselibrary', ':App'
 rootProject.name = "KotlinMall"

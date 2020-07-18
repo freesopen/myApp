@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: "kotlin-kapt"
 
 android {
     compileSdkVersion compile_sdk_version
-//    buildToolsVersion build_tools_version
 
     defaultConfig {
         applicationId "com.kotlin.mall"
@@ -12,8 +12,8 @@ android {
         targetSdkVersion target_sdk_version
         versionCode version_code
         versionName version_name
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
 
     }
 
@@ -38,6 +38,8 @@ android {
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation project( ':Provider')
+    implementation project( ':MessageCenter')
+
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
  if(isUserModule.toBoolean()){

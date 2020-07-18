@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BaseLibrary</string>
+    <string name="app_name">我的第一个kotlin 安卓</string>
 
     <string name="coming_soon_tip">敬请期待~~~</string>
     <string name="common_complete">完成</string>

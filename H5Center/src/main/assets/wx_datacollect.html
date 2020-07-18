@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+      <meta http-equiv="Content-type" name="viewport"
+			content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no, width=device-width">
+		<meta name="viewport" content="width=device-width" />
+		<link href="../../app/page/css/jquery.mobile.structure-1.3.2.css" rel="stylesheet" type="text/css" />
+		<link href="../../app/page/css/jquery.mobile-1.3.2.css" rel="stylesheet" type="text/css" />
+		<script src="../../app/page/js/jquery.js" type="text/javascript"></script>
+		<script src="../../app/page/js/jquery.mobile-1.3.2.min.js" type="text/javascript"></script>
+    <style>
+        html,body{
+            margin: 0;
+            padding: 0;
+			font-size: 12px;
+			color:#red ;
+        }
+        @keyframes myfirst
+		{
+			from {bottom: -110px;}
+			to {bottom: 0px;}
+		}
+        .pop{
+        	position:absolute;
+        	top:0;
+        	width:100%;
+        	height:100%;
+        	background-color: rgba(0,0,0,0.4);
+        	z-index:999;
+        }
+        .toast-alert{
+        	position:fixed;
+        	bottom:0;
+        	width:100%;
+        	height:110px;
+        	animation: myfirst 0.5s;
+			-moz-animation: myfirst 0.5s;	/* Firefox */
+			-webkit-animation: myfirst 0.5s;	/* Safari �� Chrome */
+			-o-animation: myfirst 0.5s;	/* Opera */
+        }
+        #imgDiv{
+        	display:inline-block;
+        	width:100%;
+        }
+        .imgSrc{
+        	position:relative;
+        	display:inline-block;
+        	margin-right: 1%;
+        	width:48%;
+        }
+        .img_icon{
+        	position:absolute;
+        	top:0px;
+        	right:0px;
+        	width:26px;
+        	height:26px;
+        	background: url(img/close.png) no-repeat center;
+        }
+        .imgSrc>img{
+        	width:100%;
+        	height:auto;
+        }
+    </style>
+    <script type="text/javascript">
+    
+    	var  iO = 0;
+    $(document).ready(function(){
+		 $('.close').on('click',function(){
+		 	var $this = $(this)[0];
+	    	var y =$this.parentNode;
+	    	y.parentNode.removeChild(y);
+		 });
+	     JsInterFace.loaction();
+     });
+     
+     
+     
+     function getLocation(res){
+     	if(res=="定位失败"){
+     		if(iO < 3 ){
+     			JsInterFace.loaction();
+     		}
+     	}else{
+     		 var latitude = res.latitude; 
+	         var longitude = res.longitude; // ���ȣ�������ΧΪ180 ~ -180��
+	         var y = latitude+'*'+longitude;
+	    	 $('#dlwz').val(y);
+     	}
+     	 
+     }
+     
+	 function addnew(){
+		  var pOp = document.getElementById('pop');
+		  if(pop.style.display == 'none'){
+		  	$('#pop').show();
+		  }else{
+		  	$('#pop').hide();
+		  }
+	 }
+	function takePhoto(info){
+    	//JsInterFace.takePhoto();
+    	var mess = JSON.parse(info);
+    	var fileContentType = mess.fileContentType;
+    	var baseCode = mess.data;
+    	var imageFlag = mess.imageFlag;
+    	var fileFileName = mess.fileFileName;
+    	$('#imgDiv').append('<span class="imgSrc"><a class="img_icon close"></a><img class="imgs" src="'+baseCode+'" fileContentType="'+fileContentType+'" imageFlag="'+imageFlag+'" fileFileName="'+fileFileName+'" /></span>');
+    }
+    function choosePhoto(info){
+	alert('2')
+    	//JsInterFace.choosePhoto();
+    	var mess = JSON.parse(info);
+    	for(var i in mess.data){
+	    	var fileContentType = mess.data[i].fileContentType;
+	    	var baseCode = mess.data[i].baseCode;
+	    	var imageFlag = mess.data[i].imageFlag;
+	    	var fileFileName = mess.data[i].fileFileName;
+    		$('#imgDiv').append('<span class="imgSrc"><a class="img_icon close"></a><img class="imgs" src="'+baseCode+'" fileContentType="'+fileContentType+'" imageFlag="'+imageFlag+'" fileFileName="'+fileFileName+'" /></span>');
+    	}
+    }
+    function submit(){
+         var  nsrmc=document.getElementById("nsrmc");
+         if(nsrmc==null || nsrmc==undefined ||  nsrmc.value=='' ){
+           alert("纳税人名称不能为空");
+          return;
+         }
+         nsrmc=nsrmc.value;
+         var  jd=null;
+         var  jdIndex=null; 
+         var  jdValue=null;
+         
+         var sc=null;
+         var ly=document.getElementById("ly").value;
+         var dz=document.getElementById("dz").value;
+         var sm=document.getElementById("sm").value;
+         var dlwz=document.getElementById("dlwz").value
+         var fileContentTypes = '';
+         var baseCodes = '';
+         var imageFlags = '';
+         var fileFileNames = '';
+         var lengthL = $('.imgs').length;
+         if(lengthL != 0){
+	          $('.imgs').each(function(){
+	         	fileContentTypes += $(this).attr(fileContentType)+'---';
+	         	baseCodes += $(this).attr(src)+'---';
+	         	imageFlags += $(this).attr(imageFlag)+'---';
+	         	fileFileNames += $(this).attr(fileFileNames)+'---';
+	         	
+	         });
+         }else{
+         	alert('请上传图片');
+         	return  false;
+         }
+        
+         var  info={
+           "nsrmc":nsrmc,
+           "jd":jdValue,
+           "sc":sc,
+           "ly":ly,
+           "dz":dz,
+           "sm":sm,
+           "dlwz":dlwz,
+           "fileContentType":fileContentTypes,
+           "baseCode":baseCodes,
+           "imageFlag":imageFlags,
+           "fileFileName":fileFileNames,
+         };
+         var param="fdatajson="+encodeURI(encodeURI(JSON.stringify(info))); 
+         $.ajax({
+           type:"post",
+           url:"picCollectInfo",
+           async:false,
+           data:param,
+           dataType:"text",
+           success:function(data){
+            alert(data);
+           }
+         });
+     
+        return  false;
+        }
+    
+    
+    </script>
+</head>
+<body>
+   <div data-role="header" data-position="fixed">
+			<h1>
+				信息采集
+			</h1>
+		</div>
+		<div data-role="content" id="main2Content">
+			<div data-role="fieldcontain"  id="fieldcontain">
+				<label for="nsrmc">
+					纳税人名称
+				</label>
+				<input name="nsrmc" id="nsrmc" value="" type="text">
+				<label for="ly">
+					纳税人识别号
+				</label>
+				<input name="ly" id="ly" value="" type="text">
+				<label for="dz">
+					地址
+				</label>
+				<textarea name="dz" id="dz"></textarea>
+				<label for="sm">
+					说明
+				</label>
+				<textarea name="sm" id="sm"></textarea>
+				<label for="dlwz">
+					地理位置
+				</label>
+				<input name="dlwz" id="dlwz" value="" type="text">
+                <br/>
+                <div id="imgDiv">
+                	
+                </div>
+			</div>
+			<a href="#" data-role="button" data-theme="b" data-inline="true" data-icon="Search" onclick='addnew();'>图片</a>
+			<a data-role="button" data-theme="b" data-inline="true" data-icon="Search" onclick='submit();' href="#">提交</a>
+		</div>
+		<div class="pop" style="display:none;" id="pop" onclick="addnew()">
+			<div class="toast-alert">
+				<button onclick="JavaScript:JsInterFace.choosePhoto()">相册</button>
+				<button onclick="JavaScript:JsInterFace.takePhoto()">拍照</button>
+			</div>
+		</div>
+</body>
+</html>
